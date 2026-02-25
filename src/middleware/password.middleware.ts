@@ -1,5 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
-import { cambiarPasswordSchema, requestResetSchema, resetearPasswordSchema, resetPasswordFinalSchema, verifyResetSchema } from '../schemas/password.schema';
+import {
+    cambiarPasswordSchema,
+    requestResetSchema,
+    resetearPasswordSchema,
+    resetPasswordFinalSchema,
+    verifyResetSchema,
+} from '../schemas/password.schema';
 import { formatearErroresZod } from '../util/errores';
 
 /* ======================================================
