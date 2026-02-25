@@ -6,7 +6,7 @@ import {
     resetPasswordFinalSchema,
     verifyResetSchema,
 } from '../schemas/password.schema';
-import { formatearErroresZod } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 /* ======================================================
    Helper genérico
@@ -20,7 +20,7 @@ function validateSchema(schema: any, data: any, res: Response) {
             ok: false,
             error: 'Error de validación',
             data: null,
-            message: formatearErroresZod(result.error),
+            message: handleAppError(result.error),
         });
         return;
     }
