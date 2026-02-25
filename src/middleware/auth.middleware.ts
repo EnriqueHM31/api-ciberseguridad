@@ -10,16 +10,14 @@ export function validarLoginMiddleware(req: Request, res: Response, next: NextFu
     const result = validarLogin(req.body);
 
     if (!result.success) {
-        res.status(400).json({
-            ok: false,
-            error: 'Error de validación',
+        const normalized = handleAppError(result);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: handleAppError(result.error),
+            ...normalized,
         });
         return;
     }
 
-    // Sanitiza el body con datos ya validados
     req.body = result.data;
 
     next();
