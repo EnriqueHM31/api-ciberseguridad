@@ -38,10 +38,6 @@ export const usuarioCrearSchema = schemaUsuario.omit({
     id_usuario: true,
 });
 
-export function validarUsuarioCrear(data: unknown) {
-    return usuarioCrearSchema.parse(data);
-}
-
 /* ======================================================
    VALIDAR SOLO ID (para eliminar / buscar / editar)
 ====================================================== */
@@ -49,10 +45,6 @@ export function validarUsuarioCrear(data: unknown) {
 export const usuarioIdSchema = z.object({
     id_usuario: z.string({ message: 'El id es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
-
-export function validarUsuarioId(data: unknown) {
-    return usuarioIdSchema.safeParse(data);
-}
 
 /* ======================================================
 MODIFICAR USUARIO
@@ -74,7 +66,3 @@ export const usuarioModificarSchema = z
     .refine((data) => Object.keys(data).length > 0, {
         message: 'Debe enviar al menos un campo para actualizar',
     });
-
-export function validarUsuarioModificar(data: unknown) {
-    return usuarioModificarSchema.safeParse(data);
-}
