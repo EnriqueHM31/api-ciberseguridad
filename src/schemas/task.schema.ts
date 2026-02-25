@@ -24,7 +24,7 @@ export const schemaTarea = z.object({
    CREAR TAREA (sin id_tarea)
 ====================================================== */
 
-const tareaCrearSchema = schemaTarea.omit({
+export const tareaCrearSchema = schemaTarea.omit({
     id_tarea: true,
 });
 
@@ -36,7 +36,7 @@ export function validarTareaCrear(data: unknown) {
    VALIDAR ID TAREA (params)
 ====================================================== */
 
-const tareaIdSchema = z.object({
+export const tareaIdSchema = z.object({
     id_tarea: z.string({ message: 'El id es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
 
@@ -48,7 +48,7 @@ export function validarTareaId(data: unknown) {
    VALIDAR ID USUARIO (params para listar tareas)
 ====================================================== */
 
-const usuarioIdSchema = z.object({
+export const usuarioIdSchema = z.object({
     id_usuario: z.string({ message: 'El id del usuario es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
 
