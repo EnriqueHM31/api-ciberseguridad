@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth.routes';
 import { passwordRouter } from './routes/password.routes';
 import { taskRouter } from './routes/task.routes';
 import { userRouter } from './routes/user.routes';
+import { expressErrorHandler } from './util/errores';
 
 const app: Express = express();
 
@@ -29,5 +30,8 @@ app.use('/', (_req, res) => {
 app.use('/health', (_req, res) => {
     res.status(200).json({ ok: true, message: 'API de seguridad funcionando', data: null, error: null, time: process.uptime() });
 });
+
+// global error handler must come last
+app.use(expressErrorHandler);
 
 export default app;
