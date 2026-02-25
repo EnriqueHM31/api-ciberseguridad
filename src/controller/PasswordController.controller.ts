@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { UUID } from 'node:crypto';
 import { JWT_RECOVERY_SECRET } from '../config';
-import { PasswordModel } from '../model/password.model';
 import { JWT_EXPIRES_PASSWORD, JWT_TOKEN_PASSWORD_NAME } from '../config/constants';
+import { PasswordModel } from '../model/password.model';
 import { TratarElError } from '../util/errores';
 
 export class PasswordController {
@@ -32,11 +32,8 @@ export class PasswordController {
 
     static async CambiarContraseña(req: Request, res: Response) {
         try {
-            const { id_usuario } = req.params as { id_usuario: string };
-            const { newPassword, contrasenaActual } = req.body as {
-                newPassword: string;
-                contrasenaActual: string;
-            };
+            const { id_usuario } = req.params as { id_usuario: UUID };
+            const { newPassword, contrasenaActual } = req.body;
 
             const { data } = await PasswordModel.cambiarContraseña(id_usuario, newPassword, contrasenaActual);
 
@@ -49,7 +46,7 @@ export class PasswordController {
         } catch (error) {
             res.status(500).json({
                 ok: false,
-                message: 'Error interno del servidor',
+                message: TratarElError(error),
                 data: null,
                 error: 'Error en la petición',
             });
@@ -57,7 +54,7 @@ export class PasswordController {
     }
     static async requestReset(req: Request, res: Response) {
         try {
-            const { email } = req.body as { email: string };
+            const { email } = req.body;
 
             const { data: dataOTP } = await PasswordModel.generarOTP(email);
 
@@ -72,7 +69,7 @@ export class PasswordController {
         } catch (error) {
             res.status(500).json({
                 ok: false,
-                message: error,
+                message: TratarElError(error),
                 data: null,
                 error: 'Error interno del servidor',
             });
@@ -84,20 +81,11 @@ export class PasswordController {
      */
     static async verifyReset(req: Request, res: Response) {
         try {
-            const { email, otp } = req.body as { email: string; otp: string };
+            const { email, otp } = req.body;
 
             const { data } = await PasswordModel.verificarOTP(email, otp);
 
-            const recoveryToken = jwt.sign(
-                {
-                    email,
-                    stage: 'RECOVERY_AUTH',
-                },
-                JWT_RECOVERY_SECRET!,
-                {
-                    expiresIn: JWT_EXPIRES_PASSWORD,
-                },
-            );
+            const recoveryToken = jwt.sign({ email, stage: 'RECOVERY_AUTH' }, JWT_RECOVERY_SECRET!, { expiresIn: JWT_EXPIRES_PASSWORD });
 
             res.cookie(JWT_TOKEN_PASSWORD_NAME, recoveryToken, {
                 httpOnly: true,
@@ -115,7 +103,7 @@ export class PasswordController {
         } catch (error) {
             res.status(500).json({
                 ok: false,
-                message: error,
+                message: TratarElError(error),
                 data: null,
                 error: 'Error interno del servidor',
             });
@@ -126,14 +114,9 @@ export class PasswordController {
      */
     static async resetPassword(req: Request, res: Response) {
         try {
-            const { email, newPassword } = req.body as {
-                email: string;
-                newPassword: string;
-            };
+            const { email, newPassword } = req.body;
 
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-            const { data } = await PasswordModel.resetearContrasenaLogin(email, hashedPassword);
+            const { data } = await PasswordModel.resetearContrasenaLogin(email, newPassword);
 
             res.status(200).json({
                 ok: true,
@@ -144,7 +127,7 @@ export class PasswordController {
         } catch (error) {
             res.status(500).json({
                 ok: false,
-                message: error,
+                message: TratarElError(error),
                 data: null,
                 error: 'Error interno del servidor',
             });
