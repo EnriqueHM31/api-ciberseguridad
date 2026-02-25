@@ -283,7 +283,30 @@ export function handleAppError(error: unknown): NormalizedError {
  * Debe registrarse al final del stack.
  * Se encarga de normalizar el error y enviarlo como respuesta HTTP.
  */
-export function expressErrorHandler(err: unknown, _req: any, res: any, _next: any) {
+import { Request, Response, NextFunction } from 'express';
+import { ErrorModel } from '../model/error.model';
+
+export async function errorHandlerMiddleware(err: unknown, req: Request, res: Response, next: NextFunction) {
     const normalized = handleAppError(err);
-    res.status(normalized.statusCode).json(normalized);
+
+    try {
+        await ErrorModel.crear({
+            codigo_error: normalized.error,
+            mensaje_error: normalized.message,
+            traza_error: err instanceof Error ? (err.stack ?? null) : null,
+            ruta: req.originalUrl,
+            metodo_http: req.method,
+            id_usuario: (req as any).usuario?.id ?? null,
+            direccion_ip: req.ip ?? null,
+        });
+    } catch (dbError) {
+        console.error('Error al guardar log en BD:', dbError);
+    }
+
+    return res.status(normalized.statusCode).json({
+        ok: false,
+        error: normalized.error,
+        message: normalized.message,
+        data: null,
+    });
 }
