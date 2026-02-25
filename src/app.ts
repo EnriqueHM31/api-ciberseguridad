@@ -8,7 +8,7 @@ import { authRouter } from './routes/auth.routes';
 import { passwordRouter } from './routes/password.routes';
 import { taskRouter } from './routes/task.routes';
 import { userRouter } from './routes/user.routes';
-import { expressErrorHandler } from './util/errores';
+import { errorHandlerMiddleware } from './util/errores';
 
 const app: Express = express();
 
@@ -32,6 +32,6 @@ app.use('/health', (_req, res) => {
 });
 
 // global error handler must come last
-app.use(expressErrorHandler);
+app.use(errorHandlerMiddleware);
 
 export default app;
