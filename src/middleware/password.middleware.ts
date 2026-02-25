@@ -1,0 +1,83 @@
+import type { Request, Response, NextFunction } from 'express';
+import { resetearPasswordSchema, cambiarPasswordSchema, requestResetSchema, verifyResetSchema, resetPasswordFinalSchema } from '../schemas/password.schema';
+import { formatearErroresZod } from '../util/errores';
+
+/* ======================================================
+   Helper genérico
+====================================================== */
+
+function validateSchema(schema: any, data: any, res: Response) {
+    const result = schema.safeParse(data);
+
+    if (!result.success) {
+        res.status(400).json({
+            ok: false,
+            error: 'Error de validación',
+            data: null,
+            message: formatearErroresZod(result.error),
+        });
+        return;
+    }
+
+    return result.data;
+}
+
+/* ======================================================
+Resetear por ID
+====================================================== */
+
+export function validarResetearPassword(req: Request, res: Response, next: NextFunction) {
+    const validated = validateSchema(resetearPasswordSchema, { ...req.params, ...req.body }, res);
+
+    if (!validated) return;
+
+    next();
+}
+
+/* ======================================================
+ Cambiar contraseña autenticado
+====================================================== */
+
+export function validarCambiarPassword(req: Request, res: Response, next: NextFunction) {
+    const validated = validateSchema(cambiarPasswordSchema, { ...req.params, ...req.body }, res);
+
+    if (!validated) return;
+
+    next();
+}
+
+/* ======================================================
+Solicitar OTP
+====================================================== */
+
+export function validarRequestReset(req: Request, res: Response, next: NextFunction) {
+    const validated = validateSchema(requestResetSchema, req.body, res);
+
+    if (!validated) return;
+
+    next();
+}
+
+/* ======================================================
+Verificar OTP
+====================================================== */
+
+export function validarVerifyReset(req: Request, res: Response, next: NextFunction) {
+    const validated = validateSchema(verifyResetSchema, req.body, res);
+
+    if (!validated) return;
+
+    next();
+}
+
+/* ======================================================
+Reset final con OTP
+====================================================== */
+
+export function validarResetPasswordFinal(req: Request, res: Response, next: NextFunction) {
+    const validated = validateSchema(resetPasswordFinalSchema, req.body, res);
+
+    if (!validated) return;
+
+    next();
+}
