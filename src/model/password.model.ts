@@ -6,9 +6,12 @@ import type { PasswordResetQuery } from '../types/password';
 import type { UserQuery } from '../types/user';
 
 export class PasswordModel {
-    static async resetearContraseña(id_usuario: string, password: string) {
+    static async resetearContraseñaAdministrador(id_usuario: string, password: string) {
         const passwordHash = await bcrypt.hash(password, 10);
-        await pool.execute('UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY id_usuario = ?', [passwordHash, id_usuario]);
+        await pool.execute('UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY id_usuario = ?', [
+            passwordHash,
+            id_usuario,
+        ]);
 
         const [usuarioActualizado] = await pool.execute<UserQuery[]>(
             `SELECT id_usuario, nombre_usuario, nombre_completo, correo_electronico, fecha_creacion, rol FROM usuarios WHERE BINARY id_usuario = ?`,
@@ -23,7 +26,9 @@ export class PasswordModel {
     }
 
     static async cambiarContraseña(id_usuario: string, password: string, passwor_confirmar: string) {
-        const [usuarioActualizar] = await pool.execute<UserQuery[]>(`SELECT id_usuario, contrasena FROM usuarios WHERE BINARY id_usuario = ?`, [id_usuario]);
+        const [usuarioActualizar] = await pool.execute<UserQuery[]>(`SELECT id_usuario, contrasena FROM usuarios WHERE BINARY id_usuario = ?`, [
+            id_usuario,
+        ]);
 
         if (usuarioActualizar.length === 0) {
             throw new Error('El usuario no existe');
@@ -40,7 +45,10 @@ export class PasswordModel {
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
-        await pool.execute('UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY id_usuario = ?', [passwordHash, id_usuario]);
+        await pool.execute('UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY id_usuario = ?', [
+            passwordHash,
+            id_usuario,
+        ]);
 
         const [usuarioActualizado] = await pool.execute<UserQuery[]>(
             `SELECT id_usuario, nombre_usuario, nombre_completo, correo_electronico, fecha_creacion, rol FROM usuarios WHERE BINARY id_usuario = ?`,
@@ -54,7 +62,9 @@ export class PasswordModel {
         return { data: usuarioActualizado[0] };
     }
     static async generarOTP(correo: string) {
-        const [usuario] = await pool.execute<UserQuery[]>(`SELECT id_usuario, correo_electronico FROM usuarios WHERE BINARY correo_electronico = ?`, [correo]);
+        const [usuario] = await pool.execute<UserQuery[]>(`SELECT id_usuario, correo_electronico FROM usuarios WHERE BINARY correo_electronico = ?`, [
+            correo,
+        ]);
 
         if (usuario.length === 0) {
             throw new Error('No se pudo generar el código de verificación');
@@ -68,17 +78,18 @@ export class PasswordModel {
 
         const id_recuperacion = crypto.randomUUID();
 
-        await pool.execute(`INSERT INTO recuperacion_contrasena (id, correo_electronico, codigo_otp, fecha_expiracion, verificado, fecha_creacion) VALUES (?, ?, ?, ?, false, CURRENT_TIMESTAMP)`, [
-            id_recuperacion,
-            correo,
-            codigoOTP,
-            fechaExpiracion,
-        ]);
+        await pool.execute(
+            `INSERT INTO recuperacion_contrasena (id, correo_electronico, codigo_otp, fecha_expiracion, verificado, fecha_creacion) VALUES (?, ?, ?, ?, false, CURRENT_TIMESTAMP)`,
+            [id_recuperacion, correo, codigoOTP, fechaExpiracion],
+        );
 
         return { data: codigoOTP };
     }
     static async verificarOTP(correo: string, codigo: string) {
-        const [registro] = await pool.execute<PasswordResetQuery[]>(`SELECT id, codigo_otp, fecha_expiracion, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`, [correo]);
+        const [registro] = await pool.execute<PasswordResetQuery[]>(
+            `SELECT id, codigo_otp, fecha_expiracion, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`,
+            [correo],
+        );
 
         if (registro.length === 0) {
             throw new Error('No existe solicitud válida');
@@ -103,7 +114,9 @@ export class PasswordModel {
         return { data: true };
     }
     static async resetearContrasenaLogin(correo: string, nuevaContrasena: string) {
-        const [registro] = await pool.execute<any[]>(`SELECT id, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`, [correo]);
+        const [registro] = await pool.execute<any[]>(`SELECT id, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`, [
+            correo,
+        ]);
 
         if (registro.length === 0) {
             throw new Error('No existe solicitud válida');
@@ -115,7 +128,10 @@ export class PasswordModel {
 
         const passwordHash = await bcrypt.hash(nuevaContrasena, 10);
 
-        await pool.execute(`UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY correo_electronico = ?`, [passwordHash, correo]);
+        await pool.execute(`UPDATE usuarios SET contrasena = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE BINARY correo_electronico = ?`, [
+            passwordHash,
+            correo,
+        ]);
 
         // Eliminar el registro después de usarlo
         await pool.execute(`DELETE FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`, [correo]);
