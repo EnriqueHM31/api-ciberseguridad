@@ -6,8 +6,14 @@ import { verificarUserMiddleware } from '../middleware/verifyAuthToken.middlewar
 
 export const taskRouter: ExpressRouter = Router();
 
-// TASKS
+// RUTA PARA QUE EL USUARIO PUEDA OBTENER TODOS LOS TAREAS DE UN USUARIO
 taskRouter.get('/user/:id_usuario', verificarUserMiddleware, validarIdUsuarioTareaMiddleware, TareasController.ObtenerTareasUsuario);
+
+// RUTA PARA QUE EL USUARIO PUEDA CREAR UN TAREA
 taskRouter.post('/', verificarUserMiddleware, validarCrearTareaMiddleware, TareasController.CrearTarea);
+
+// RUTA PARA QUE EL USUARIO PUEDA MODIFICAR UN TAREA (MARCAR COMO COMPLETADA)
 taskRouter.put('/:id_tarea', verificarUserMiddleware, validarIdTareaMiddleware, TareasController.ModificarTarea);
+
+// RUTA PARA QUE EL USUARIO PUEDA ELIMINAR UN TAREA
 taskRouter.delete('/:id_tarea', verificarUserMiddleware, validarIdTareaMiddleware, TareasController.EliminarTarea);

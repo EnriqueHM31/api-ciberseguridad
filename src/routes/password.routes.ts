@@ -10,24 +10,28 @@ import {
     validarVerifyResetMiddleware,
 } from '../middleware/password.middleware';
 import { verificarAdminMiddleware, verificarUserMiddleware } from '../middleware/verifyAuthToken.middleware';
-import { verificarResetPasswordMiddleware } from '../middleware/verifyResetPassword.middleware';
+import { verificarTokenResetPasswordMiddleware } from '../middleware/verifyResetPassword.middleware';
 
 export const passwordRouter: ExpressRouter = Router();
 
-// PASSWORD
+// RUTA PARA QUE EL ADMINISTRADOR PUEDA RESETEAR LA CONTRASEÑA DE UN USUARIO
 passwordRouter.put(
     '/reset/:id_usuario',
     verificarAdminMiddleware,
     validarResetearPasswordMiddleware,
     PasswordController.ResetearContraseñaAdministrador,
 );
+
+// RUTA PARA QUE EL USUARIO PUEDA RESETEAR LA CONTRASEÑA DE SU PROPIO USUARIO
 passwordRouter.put(
     '/change/:id_usuario',
     verificarUserMiddleware,
-    validarCambiarPasswordMiddleware,
     resetLimitPasswordMiddleware,
+    validarCambiarPasswordMiddleware,
     PasswordController.CambiarContraseña,
 );
+
+// RUTA PARA QUE EL USUARIO PUEDA REQUERIR UN CÓDIGO DE RECUPERACIÓN
 passwordRouter.post(
     '/request-reset',
     resetLimiterMiddleware,
@@ -35,11 +39,15 @@ passwordRouter.post(
     validarRequestResetMiddleware,
     PasswordController.requestReset,
 );
+
+// RUTA PARA QUE EL USUARIO PUEDA VERIFICAR UN CÓDIGO DE RECUPERACIÓN
 passwordRouter.put('/verify-reset', resetLimiterMiddleware, validarVerifyResetMiddleware, PasswordController.verifyReset);
+
+// RUTA PARA QUE EL USUARIO PUEDA RESETEAR LA CONTRASEÑA DESDE EL LOGIN (SIN AUTENTICARSE)
 passwordRouter.put(
     '/reset-password-login',
+    verificarTokenResetPasswordMiddleware,
     resetLimitPasswordMiddleware,
-    verificarResetPasswordMiddleware,
     validarResetPasswordFinalMiddleware,
     PasswordController.resetPassword,
 );

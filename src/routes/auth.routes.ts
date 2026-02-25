@@ -6,7 +6,11 @@ import { verificarTokenMiddleware } from '../middleware/verifyAuthToken.middlewa
 
 export const authRouter: ExpressRouter = Router();
 
-// AUTH
+// RUTA PARA QUE EL USUARIO PUEDA LOGIN
 authRouter.post('/login', validarLoginMiddleware, AuthController.IniciarSesion);
+
+// RUTA PARA QUE EL USUARIO PUEDA CERRAR SESIÓN
 authRouter.post('/logout', verificarTokenMiddleware, AuthController.CerrarSesion);
+
+// RUTA PARA QUE EL USUARIO PUEDA VERIFICAR QUE EL USUARIO ESTA AUTENTICADO Y EXISTE (CECKEO DE SESIÓN)
 authRouter.post('/verify', AuthController.VerificarUsuario);
