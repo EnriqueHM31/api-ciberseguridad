@@ -9,14 +9,32 @@ import {
     validarResetPasswordFinalMiddleware,
     validarVerifyResetMiddleware,
 } from '../middleware/password.middleware';
+import { verificarAdminMiddleware, verificarUserMiddleware } from '../middleware/verifyAuthToken.middleware';
 import { verificarResetPasswordMiddleware } from '../middleware/verifyResetPassword.middleware';
 
 export const passwordRouter: ExpressRouter = Router();
 
 // PASSWORD
-passwordRouter.put('/reset/:id_usuario', validarResetearPasswordMiddleware, PasswordController.ResetearContraseñaAdministrador);
-passwordRouter.put('/change/:id_usuario', resetLimitPasswordMiddleware, validarCambiarPasswordMiddleware, PasswordController.CambiarContraseña);
-passwordRouter.post('/request-reset', resetLimiterMiddleware, validarRequestResetMiddleware, PasswordController.requestReset);
+passwordRouter.put(
+    '/reset/:id_usuario',
+    verificarAdminMiddleware,
+    validarResetearPasswordMiddleware,
+    PasswordController.ResetearContraseñaAdministrador,
+);
+passwordRouter.put(
+    '/change/:id_usuario',
+    verificarUserMiddleware,
+    validarCambiarPasswordMiddleware,
+    resetLimitPasswordMiddleware,
+    PasswordController.CambiarContraseña,
+);
+passwordRouter.post(
+    '/request-reset',
+    resetLimiterMiddleware,
+    validarCambiarPasswordMiddleware,
+    validarRequestResetMiddleware,
+    PasswordController.requestReset,
+);
 passwordRouter.put('/verify-reset', resetLimiterMiddleware, validarVerifyResetMiddleware, PasswordController.verifyReset);
 passwordRouter.put(
     '/reset-password-login',
