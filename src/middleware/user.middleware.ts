@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { validarUsuarioCrear, validarUsuarioId, validarUsuarioModificar } from '../schemas/user.schema';
-import { formatearErroresZod } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 /* ======================================================
 VALIDAR CREAR USUARIO
@@ -16,7 +16,7 @@ export const validarCrearUsuarioMiddleware = (req: Request, res: Response, next:
     } catch (error: unknown) {
         res.status(400).json({
             ok: false,
-            message: formatearErroresZod(error),
+            message: handleAppError(error),
             data: null,
             error: 'Datos inválidos para crear usuario',
         });
@@ -35,7 +35,7 @@ export const validarIdUsuarioMiddleware = (req: Request, res: Response, next: Ne
         if (!resultado.success) {
             return res.status(400).json({
                 ok: false,
-                message: formatearErroresZod(resultado.error),
+                message: handleAppError(resultado.error),
                 data: null,
                 error: 'ID inválido',
             });
@@ -48,7 +48,7 @@ export const validarIdUsuarioMiddleware = (req: Request, res: Response, next: Ne
         res.status(500).json({
             ok: false,
             data: null,
-            message: formatearErroresZod(error),
+            message: handleAppError(error),
             error: 'Error interno del servidor',
         });
         return;
@@ -67,7 +67,7 @@ export const validarModificarUsuarioMiddleware = (req: Request, res: Response, n
             res.status(400).json({
                 ok: false,
                 data: null,
-                message: formatearErroresZod(resultado.error),
+                message: handleAppError(resultado.error),
                 error: 'Datos inválidos para actualizar usuario',
             });
             return;
