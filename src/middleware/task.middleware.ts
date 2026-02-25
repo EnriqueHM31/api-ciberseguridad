@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { validarTareaCrear, validarTareaId, validarUsuarioIdTarea } from '../schemas/task.schema';
-import { formatearErroresZod } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 /* ======================================================
 VALIDAR CREAR TAREA
@@ -14,7 +14,7 @@ export function validarCrearTareaMiddleware(req: Request, res: Response, next: N
             ok: false,
             error: 'Error de validación',
             data: null,
-            message: formatearErroresZod(result.error),
+            message: handleAppError(result.error).message,
         });
         return;
     }
@@ -35,7 +35,7 @@ export function validarIdTareaMiddleware(req: Request, res: Response, next: Next
             ok: false,
             error: 'Error de validación',
             data: null,
-            message: formatearErroresZod(result.error),
+            message: handleAppError(result.error).message,
         });
         return;
     }
@@ -55,7 +55,7 @@ export function validarIdUsuarioTareaMiddleware(req: Request, res: Response, nex
             ok: false,
             error: 'Error de validación',
             data: null,
-            message: formatearErroresZod(result.error),
+            message: handleAppError(result.error).message,
         });
         return;
     }
