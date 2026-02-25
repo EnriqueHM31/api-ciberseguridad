@@ -4,7 +4,7 @@ import { JWT_SECRET } from '../config';
 import { USER_ROLE_ADMIN, USER_ROLE_USER } from '../config/index';
 import { UUID } from 'node:crypto';
 
-export const verificarAdmin = (req: Request, res: Response, next: NextFunction) => {
+export const verificarAdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token;
 
@@ -33,7 +33,7 @@ export const verificarAdmin = (req: Request, res: Response, next: NextFunction) 
     }
 };
 
-export const verificarUser = (req: Request, res: Response, next: NextFunction) => {
+export const verificarUserMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token;
 
@@ -70,7 +70,7 @@ export const verificarUser = (req: Request, res: Response, next: NextFunction) =
     }
 };
 
-export const verificarToken = (req: Request, res: Response, next: NextFunction) => {
+export const verificarTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token;
 
