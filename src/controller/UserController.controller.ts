@@ -1,21 +1,19 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { UserModel } from '../model/user.model';
 import type { User } from '../types/user';
-import { handleAppError } from '../util/errores';
 
 export class UserController {
-    static async ObtenerUsuarios(_req: Request, res: Response) {
+    static async ObtenerUsuarios(_req: Request, res: Response, next: NextFunction) {
         try {
             const { data } = await UserModel.ObtenerTodosUsuarios();
 
             res.status(200).json({ ok: true, message: 'Listado de usuarios', data: data, error: null });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
-    static async CrearUsuario(req: Request, res: Response) {
+    static async CrearUsuario(req: Request, res: Response, next: NextFunction) {
         try {
             const { nombre_usuario, nombre_completo, correo_electronico, contrasena, rol } = req.body;
 
@@ -23,12 +21,11 @@ export class UserController {
 
             res.status(201).json({ ok: true, message: `Usuario ${data.nombre_usuario} creado correctamente`, data: data, error: null });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
-    static async ModificarUsuario(req: Request, res: Response) {
+    static async ModificarUsuario(req: Request, res: Response, next: NextFunction) {
         try {
             const { id_usuario } = req.params as { id_usuario: string };
             const { nombre_usuario, nombre_completo, correo_electronico, rol } = req.body as Omit<User, 'id_usuario'>;
@@ -42,19 +39,17 @@ export class UserController {
                 error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
-    static async EliminarUsuario(req: Request, res: Response) {
+    static async EliminarUsuario(req: Request, res: Response, next: NextFunction) {
         try {
             const { id_usuario } = req.params as { id_usuario: string };
             const { data } = await UserModel.eliminarUsuario({ id_usuario });
             res.status(200).json({ ok: true, message: 'Usuario eliminado correctamente', data: data, error: null });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 }
