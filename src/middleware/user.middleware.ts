@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import { validarUsuarioCrear, validarUsuarioId, validarUsuarioModificar } from '../schemas/user.schema';
+import { usuarioCrearSchema, usuarioIdSchema, usuarioModificarSchema } from '../schemas/user.schema';
 import { handleAppError } from '../util/errores';
 
 /* ======================================================
@@ -8,17 +8,14 @@ VALIDAR CREAR USUARIO
 
 export const validarCrearUsuarioMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const data = validarUsuarioCrear(req.body);
-
-        req.body = data;
+        usuarioCrearSchema.parse(req.body);
 
         next();
     } catch (error: unknown) {
-        res.status(400).json({
-            ok: false,
-            message: handleAppError(error),
+        const normalized = handleAppError(error);
+        res.status(normalized.statusCode).json({
             data: null,
-            error: 'Datos inválidos para crear usuario',
+            ...normalized,
         });
         return;
     }
@@ -29,30 +26,20 @@ VALIDAR ID USUARIO (params)
 ====================================================== */
 
 export const validarIdUsuarioMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const resultado = validarUsuarioId(req.params);
+    const resultado = usuarioIdSchema.safeParse(req.params);
 
-        if (!resultado.success) {
-            return res.status(400).json({
-                ok: false,
-                message: handleAppError(resultado.error),
-                data: null,
-                error: 'ID inválido',
-            });
-        }
-
-        req.params = resultado.data;
-
-        next();
-    } catch (error: unknown) {
-        res.status(500).json({
-            ok: false,
+    if (!resultado.success) {
+        const normalized = handleAppError(resultado.error);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: handleAppError(error),
-            error: 'Error interno del servidor',
+            ...normalized,
         });
         return;
     }
+
+    req.params = resultado.data;
+
+    next();
 };
 
 /* ======================================================
@@ -60,29 +47,16 @@ VALIDAR MODIFICAR USUARIO
 ====================================================== */
 
 export const validarModificarUsuarioMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const resultado = validarUsuarioModificar(req.body);
+    const resultado = usuarioModificarSchema.safeParse(req.body);
 
-        if (!resultado.success) {
-            res.status(400).json({
-                ok: false,
-                data: null,
-                message: handleAppError(resultado.error),
-                error: 'Datos inválidos para actualizar usuario',
-            });
-            return;
-        }
-
-        req.body = resultado.data;
-
-        next();
-    } catch (error) {
-        res.status(500).json({
-            ok: false,
+    if (!resultado.success) {
+        const normalized = handleAppError(resultado.error);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: error,
-            error: 'Error interno del servidor',
+            ...normalized,
         });
         return;
     }
+    req.body = resultado.data;
+    next();
 };
