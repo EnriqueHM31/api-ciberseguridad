@@ -4,7 +4,7 @@ import { UUID } from 'node:crypto';
 import { JWT_SECRET } from '../config';
 import { JWT_EXPIRES_SESSION, JWT_TOKEN_NAME } from '../config/constants';
 import { AuthModel } from '../model/auth.model';
-import { TratarElError } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 export class AuthController {
     static async IniciarSesion(req: Request, res: Response) {
@@ -35,7 +35,8 @@ export class AuthController {
 
             res.status(200).json({ ok: true, message: 'Inicio de sesión exitoso', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
