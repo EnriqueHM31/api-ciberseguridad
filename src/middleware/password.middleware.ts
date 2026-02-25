@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction } from 'express';
-import { resetearPasswordSchema, cambiarPasswordSchema, requestResetSchema, verifyResetSchema, resetPasswordFinalSchema } from '../schemas/password.schema';
+import type { NextFunction, Request, Response } from 'express';
+import { cambiarPasswordSchema, requestResetSchema, resetearPasswordSchema, resetPasswordFinalSchema, verifyResetSchema } from '../schemas/password.schema';
 import { formatearErroresZod } from '../util/errores';
 
 /* ======================================================
@@ -26,7 +26,7 @@ function validateSchema(schema: any, data: any, res: Response) {
 Resetear por ID
 ====================================================== */
 
-export function validarResetearPassword(req: Request, res: Response, next: NextFunction) {
+export function validarResetearPasswordMiddleware(req: Request, res: Response, next: NextFunction) {
     const validated = validateSchema(resetearPasswordSchema, { ...req.params, ...req.body }, res);
 
     if (!validated) return;
@@ -38,7 +38,7 @@ export function validarResetearPassword(req: Request, res: Response, next: NextF
  Cambiar contraseña autenticado
 ====================================================== */
 
-export function validarCambiarPassword(req: Request, res: Response, next: NextFunction) {
+export function validarCambiarPasswordMiddleware(req: Request, res: Response, next: NextFunction) {
     const validated = validateSchema(cambiarPasswordSchema, { ...req.params, ...req.body }, res);
 
     if (!validated) return;
@@ -50,7 +50,7 @@ export function validarCambiarPassword(req: Request, res: Response, next: NextFu
 Solicitar OTP
 ====================================================== */
 
-export function validarRequestReset(req: Request, res: Response, next: NextFunction) {
+export function validarRequestResetMiddleware(req: Request, res: Response, next: NextFunction) {
     const validated = validateSchema(requestResetSchema, req.body, res);
 
     if (!validated) return;
@@ -62,7 +62,7 @@ export function validarRequestReset(req: Request, res: Response, next: NextFunct
 Verificar OTP
 ====================================================== */
 
-export function validarVerifyReset(req: Request, res: Response, next: NextFunction) {
+export function validarVerifyResetMiddleware(req: Request, res: Response, next: NextFunction) {
     const validated = validateSchema(verifyResetSchema, req.body, res);
 
     if (!validated) return;
@@ -74,7 +74,7 @@ export function validarVerifyReset(req: Request, res: Response, next: NextFuncti
 Reset final con OTP
 ====================================================== */
 
-export function validarResetPasswordFinal(req: Request, res: Response, next: NextFunction) {
+export function validarResetPasswordFinalMiddleware(req: Request, res: Response, next: NextFunction) {
     const validated = validateSchema(resetPasswordFinalSchema, req.body, res);
 
     if (!validated) return;
