@@ -14,7 +14,6 @@ export const pool = mysql.createPool({
     database: DB_NAME,
 
     ssl: {
-        // Usamos path.resolve para asegurar que encuentre los archivos .pem
         ca: fs.readFileSync(path.resolve('ca.pem')),
         rejectUnauthorized: false,
     },
