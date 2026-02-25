@@ -28,10 +28,6 @@ export const tareaCrearSchema = schemaTarea.omit({
     id_tarea: true,
 });
 
-export function validarTareaCrear(data: unknown) {
-    return tareaCrearSchema.safeParse(data);
-}
-
 /* ======================================================
    VALIDAR ID TAREA (params)
 ====================================================== */
@@ -40,10 +36,6 @@ export const tareaIdSchema = z.object({
     id_tarea: z.string({ message: 'El id es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
 
-export function validarTareaId(data: unknown) {
-    return tareaIdSchema.safeParse(data);
-}
-
 /* ======================================================
    VALIDAR ID USUARIO (params para listar tareas)
 ====================================================== */
@@ -51,7 +43,3 @@ export function validarTareaId(data: unknown) {
 export const usuarioIdSchema = z.object({
     id_usuario: z.string({ message: 'El id del usuario es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
-
-export function validarUsuarioIdTarea(data: unknown) {
-    return usuarioIdSchema.safeParse(data);
-}
