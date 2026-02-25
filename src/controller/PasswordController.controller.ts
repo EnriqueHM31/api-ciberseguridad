@@ -7,12 +7,12 @@ import { PasswordModel } from '../model/password.model';
 import { handleAppError } from '../util/errores';
 
 export class PasswordController {
-    static async ResetearContraseña(req: Request, res: Response) {
+    static async ResetearContraseñaAdministrador(req: Request, res: Response) {
         try {
             const { id_usuario } = req.params as { id_usuario: string };
             const { newPassword } = req.body as { newPassword: string };
 
-            const { data } = await PasswordModel.resetearContraseña(id_usuario, newPassword);
+            const { data } = await PasswordModel.resetearContraseñaAdministrador(id_usuario, newPassword);
 
             res.status(200).json({
                 ok: true,
