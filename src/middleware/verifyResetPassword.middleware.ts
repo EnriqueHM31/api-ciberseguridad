@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_RECOVERY_SECRET } from '../config';
 import { handleAppError } from '../util/errores';
 
-export const verificarResetPasswordMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const verificarTokenResetPasswordMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token_password;
 
