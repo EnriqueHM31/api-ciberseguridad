@@ -1,13 +1,11 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { UUID } from 'node:crypto';
 import { JWT_RECOVERY_SECRET } from '../config';
 import { JWT_EXPIRES_PASSWORD, JWT_TOKEN_PASSWORD_NAME } from '../config/constants';
 import { PasswordModel } from '../model/password.model';
-import { handleAppError } from '../util/errores';
 
 export class PasswordController {
-    static async ResetearContraseñaAdministrador(req: Request, res: Response) {
+    static async ResetearContraseñaAdministrador(req: Request, res: Response, next: NextFunction) {
         try {
             const { id_usuario } = req.params as { id_usuario: string };
             const { newPassword } = req.body as { newPassword: string };
@@ -21,14 +19,13 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
-    static async CambiarContraseña(req: Request, res: Response) {
+    static async CambiarContraseña(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id_usuario } = req.params as { id_usuario: UUID };
+            const { id_usuario } = req.params as { id_usuario: string };
             const { newPassword, contrasenaActual } = req.body;
 
             const { data } = await PasswordModel.cambiarContraseña(id_usuario, newPassword, contrasenaActual);
@@ -40,11 +37,10 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
-    static async requestReset(req: Request, res: Response) {
+    static async requestReset(req: Request, res: Response, next: NextFunction) {
         try {
             const { email } = req.body;
 
@@ -59,15 +55,14 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
     /**
     Verificar código OTP
      */
-    static async verifyReset(req: Request, res: Response) {
+    static async verifyReset(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, otp } = req.body;
 
@@ -89,14 +84,13 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
     /**
     Resetear contraseña después de verificar OTP
      */
-    static async resetPassword(req: Request, res: Response) {
+    static async resetPassword(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, newPassword } = req.body;
 
@@ -105,12 +99,11 @@ export class PasswordController {
             res.status(200).json({
                 ok: true,
                 message: 'Contraseña actualizada correctamente',
-                data: null,
-                error: data,
+                data: data,
+                error: null,
             });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 }
