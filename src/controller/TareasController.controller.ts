@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import { TareaModel } from '../model/tarea.model';
-import { TratarElError } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 export class TareasController {
     static async ObtenerTareasUsuario(req: Request, res: Response) {
@@ -9,7 +9,8 @@ export class TareasController {
             const { data } = await TareaModel.ObtenerTareasUsuario(id_usuario);
             res.status(200).json({ ok: true, message: 'Listado de tareas del usuario', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -21,7 +22,8 @@ export class TareasController {
 
             res.status(201).json({ ok: true, message: 'Tarea creada correctamente', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -33,7 +35,8 @@ export class TareasController {
 
             res.status(200).json({ ok: true, message: 'Datos de la tarea actualizados correctamente', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -43,7 +46,8 @@ export class TareasController {
             const { data } = await TareaModel.eliminarTarea(id_tarea);
             res.status(200).json({ ok: true, message: 'Tarea eliminado correctamente', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 }
