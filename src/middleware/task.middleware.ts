@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction } from 'express';
-import { validarTareaCrear, validarTareaId, validarUsuarioIdTarea } from '../schemas/task.schema';
+import type { NextFunction, Request, Response } from 'express';
+import { tareaCrearSchema, tareaIdSchema, usuarioIdSchema } from '../schemas/task.schema';
 import { handleAppError } from '../util/errores';
 
 /* ======================================================
@@ -7,14 +7,13 @@ VALIDAR CREAR TAREA
 ====================================================== */
 
 export function validarCrearTareaMiddleware(req: Request, res: Response, next: NextFunction) {
-    const result = validarTareaCrear(req.body);
+    const result = tareaCrearSchema.safeParse(req.body);
 
     if (!result.success) {
-        res.status(400).json({
-            ok: false,
-            error: 'Error de validación',
+        const normalized = handleAppError(result);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: handleAppError(result.error).message,
+            ...normalized,
         });
         return;
     }
@@ -28,14 +27,13 @@ VALIDAR ID TAREA (params)
 ====================================================== */
 
 export function validarIdTareaMiddleware(req: Request, res: Response, next: NextFunction) {
-    const result = validarTareaId(req.params);
+    const result = tareaIdSchema.safeParse(req.params);
 
     if (!result.success) {
-        res.status(400).json({
-            ok: false,
-            error: 'Error de validación',
+        const normalized = handleAppError(result);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: handleAppError(result.error).message,
+            ...normalized,
         });
         return;
     }
@@ -48,14 +46,13 @@ VALIDAR ID USUARIO (params)
 ====================================================== */
 
 export function validarIdUsuarioTareaMiddleware(req: Request, res: Response, next: NextFunction) {
-    const result = validarUsuarioIdTarea(req.params);
+    const result = usuarioIdSchema.safeParse(req.params);
 
     if (!result.success) {
-        res.status(400).json({
-            ok: false,
-            error: 'Error de validación',
+        const normalized = handleAppError(result);
+        res.status(normalized.statusCode).json({
             data: null,
-            message: handleAppError(result.error).message,
+            ...normalized,
         });
         return;
     }
