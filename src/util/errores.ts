@@ -288,7 +288,7 @@ import { ErrorModel } from '../model/error.model';
 
 export async function errorHandlerMiddleware(err: unknown, req: Request, res: Response, next: NextFunction) {
     const normalized = handleAppError(err);
-
+    const ip = req.ip === '::1' ? '127.0.0.1' : req.ip;
     try {
         await ErrorModel.crear({
             codigo_error: normalized.error,
@@ -296,8 +296,8 @@ export async function errorHandlerMiddleware(err: unknown, req: Request, res: Re
             traza_error: err instanceof Error ? (err.stack ?? null) : null,
             ruta: req.originalUrl,
             metodo_http: req.method,
-            id_usuario: (req as any).usuario?.id ?? null,
-            direccion_ip: req.ip ?? null,
+            id_usuario: (req as any).id_usuario ?? null,
+            direccion_ip: ip ?? null,
         });
     } catch (dbError) {
         console.error('Error al guardar log en BD:', dbError);
