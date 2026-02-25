@@ -1,13 +1,11 @@
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { UUID } from 'node:crypto';
 import { JWT_SECRET } from '../config';
 import { JWT_EXPIRES_SESSION, JWT_TOKEN_NAME } from '../config/constants';
 import { AuthModel } from '../model/auth.model';
-import { handleAppError } from '../util/errores';
 
 export class AuthController {
-    static async IniciarSesion(req: Request, res: Response) {
+    static async IniciarSesion(req: Request, res: Response, next: NextFunction) {
         try {
             const { username, password } = req.body;
 
@@ -35,8 +33,7 @@ export class AuthController {
 
             res.status(200).json({ ok: true, message: 'Inicio de sesión exitoso', data: data, error: null });
         } catch (error) {
-            const normalized = handleAppError(error);
-            res.status(normalized.statusCode).json({ ...normalized, data: null });
+            next(error);
         }
     }
 
@@ -45,22 +42,23 @@ export class AuthController {
         res.status(200).json({ ok: true, message: 'Sesión cerrada correctamente', data: null, error: null });
     }
 
-    static async VerificarUsuario(req: Request, res: Response) {
+    static async VerificarUsuario(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.cookies?.token;
+            const token = req.cookies?.[JWT_TOKEN_NAME];
 
             if (!token) {
                 res.status(200).json({
                     ok: false,
                     message: 'No autenticado',
                     data: null,
+                    error: 'Error en la petición',
                 });
                 return;
             }
 
             const decoded = jwt.verify(token, JWT_SECRET);
 
-            const { id_usuario } = decoded as { id_usuario: UUID };
+            const { id_usuario } = decoded as { id_usuario: string };
 
             const { data } = await AuthModel.VerificarUsuario(id_usuario);
 
@@ -68,13 +66,10 @@ export class AuthController {
                 ok: true,
                 message: 'Usuario autenticado',
                 data: data,
+                error: null,
             });
-        } catch {
-            res.status(200).json({
-                ok: false,
-                message: 'No autenticado',
-                data: null,
-            });
+        } catch (error) {
+            next(error);
         }
     }
 }
