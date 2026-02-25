@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-export const resetLimiter = rateLimit({
+export const resetLimiterMiddleware = rateLimit({
     windowMs: 30 * 60 * 1000,
     max: 3, // Limitar a 3 solicitudes por ventana
     message: {
@@ -11,7 +11,7 @@ export const resetLimiter = rateLimit({
     },
 });
 
-export const resetLimitPassword = rateLimit({
+export const resetLimitPasswordMiddleware = rateLimit({
     windowMs: 30 * 60 * 1000,
     max: 3, // Limitar a 3 solicitudes por ventana
     message: {
