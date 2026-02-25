@@ -4,7 +4,7 @@ import { z } from 'zod';
 LOGIN
 ====================================================== */
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
     username: z
         .string({ message: 'El usuario es obligatorio' })
         .min(3, { message: 'Debe tener al menos 3 caracteres' })
@@ -12,7 +12,3 @@ const loginSchema = z.object({
 
     password: z.string({ message: 'La contraseña es obligatoria' }),
 });
-
-export function validarLogin(data: unknown) {
-    return loginSchema.safeParse(data);
-}
