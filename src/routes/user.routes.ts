@@ -9,5 +9,11 @@ export const userRouter: ExpressRouter = Router();
 // USERS
 userRouter.get('/', verificarAdminMiddleware, UserController.ObtenerUsuarios);
 userRouter.post('/', verificarAdminMiddleware, validarCrearUsuarioMiddleware, UserController.CrearUsuario);
-userRouter.put('/:id_usuario', verificarAdminMiddleware, validarIdUsuarioMiddleware, validarModificarUsuarioMiddleware, UserController.ModificarUsuario);
+userRouter.put(
+    '/:id_usuario',
+    verificarAdminMiddleware,
+    validarIdUsuarioMiddleware,
+    validarModificarUsuarioMiddleware,
+    UserController.ModificarUsuario,
+);
 userRouter.delete('/:id_usuario', verificarAdminMiddleware, validarIdUsuarioMiddleware, UserController.EliminarUsuario);
