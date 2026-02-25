@@ -34,7 +34,7 @@ export const schemaUsuario = z.object({
 CREAR USUARIO (sin id_usuario)
 ====================================================== */
 
-const usuarioCrearSchema = schemaUsuario.omit({
+export const usuarioCrearSchema = schemaUsuario.omit({
     id_usuario: true,
 });
 
@@ -46,7 +46,7 @@ export function validarUsuarioCrear(data: unknown) {
    VALIDAR SOLO ID (para eliminar / buscar / editar)
 ====================================================== */
 
-const usuarioIdSchema = z.object({
+export const usuarioIdSchema = z.object({
     id_usuario: z.string({ message: 'El id es requerido' }).uuid({ message: 'El id debe ser un UUID válido' }),
 });
 
@@ -61,7 +61,7 @@ MODIFICAR USUARIO
 - Debe enviar al menos un campo
 ====================================================== */
 
-const usuarioModificarSchema = z
+export const usuarioModificarSchema = z
     .object({
         nombre_usuario: z.string().min(3).max(50).optional(),
 
