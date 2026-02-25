@@ -1,8 +1,9 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { UUID } from 'node:crypto';
 import { JWT_SECRET } from '../config';
 import { USER_ROLE_ADMIN, USER_ROLE_USER } from '../config/index';
-import { UUID } from 'node:crypto';
+import { handleAppError } from '../util/errores';
 
 export const verificarAdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,14 +22,17 @@ export const verificarAdminMiddleware = (req: Request, res: Response, next: Next
             return res.status(403).json({
                 ok: false,
                 message: 'Acceso solo para administradores',
+                data: null,
+                error: null,
             });
         }
 
         next();
-    } catch {
-        return res.status(401).json({
-            ok: false,
-            message: 'Token inválido o expirado',
+    } catch (error) {
+        const normalized = handleAppError(error);
+        res.status(normalized.statusCode).json({
+            data: null,
+            ...normalized,
         });
     }
 };
@@ -36,8 +40,6 @@ export const verificarAdminMiddleware = (req: Request, res: Response, next: Next
 export const verificarUserMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.token;
-
-        console.log({ token });
 
         if (!token) {
             return res.status(401).json({
@@ -60,12 +62,11 @@ export const verificarUserMiddleware = (req: Request, res: Response, next: NextF
         }
 
         next();
-    } catch {
-        return res.status(401).json({
-            ok: false,
-            message: 'Token inválido o expirado',
+    } catch (error) {
+        const normalized = handleAppError(error);
+        res.status(normalized.statusCode).json({
             data: null,
-            error: null,
+            ...normalized,
         });
     }
 };
@@ -78,16 +79,20 @@ export const verificarTokenMiddleware = (req: Request, res: Response, next: Next
             return res.status(401).json({
                 ok: false,
                 message: 'No autenticado',
+                data: null,
+                error: 'Token no encontrado',
             });
         }
 
         jwt.verify(token, JWT_SECRET!);
 
         next();
-    } catch {
-        return res.status(401).json({
-            ok: false,
-            message: 'Token inválido o expirado',
+    } catch (error) {
+        const normalized = handleAppError(error);
+        res.status(normalized.statusCode).json({
+            data: null,
+
+            ...normalized,
         });
     }
 };
