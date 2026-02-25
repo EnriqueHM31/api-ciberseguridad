@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { UserModel } from '../model/user.model';
 import type { User } from '../types/user';
-import { TratarElError } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 export class UserController {
     static async ObtenerUsuarios(_req: Request, res: Response) {
@@ -10,7 +10,8 @@ export class UserController {
 
             res.status(200).json({ ok: true, message: 'Listado de usuarios', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -22,7 +23,8 @@ export class UserController {
 
             res.status(201).json({ ok: true, message: `Usuario ${data.nombre_usuario} creado correctamente`, data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -40,7 +42,8 @@ export class UserController {
                 error: null,
             });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -50,7 +53,8 @@ export class UserController {
             const { data } = await UserModel.eliminarUsuario({ id_usuario });
             res.status(200).json({ ok: true, message: 'Usuario eliminado correctamente', data: data, error: null });
         } catch (error) {
-            res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 }
