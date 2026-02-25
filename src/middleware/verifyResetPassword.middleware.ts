@@ -1,11 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_RECOVERY_SECRET } from '../config';
-import { handleAppError } from '../util/errores';
+import { JWT_TOKEN_PASSWORD_NAME } from '../config/constants';
 
 export const verificarTokenResetPasswordMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies?.token_password;
+        const token = req.cookies?.[JWT_TOKEN_PASSWORD_NAME];
 
         if (!token) {
             res.status(401).json({
@@ -17,16 +17,12 @@ export const verificarTokenResetPasswordMiddleware = (req: Request, res: Respons
             return;
         }
 
-        const decoded = jwt.verify(token, JWT_RECOVERY_SECRET!);
+        const decoded = jwt.verify(token, JWT_RECOVERY_SECRET!) as { id_usuario: string };
 
-        req.body.recoverySession = decoded;
+        req.body.id_usuario = decoded.id_usuario;
 
         next();
     } catch (error) {
-        const normalized = handleAppError(error);
-        res.status(normalized.statusCode).json({
-            data: null,
-            ...normalized,
-        });
+        next(error);
     }
 };
