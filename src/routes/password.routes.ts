@@ -18,4 +18,10 @@ passwordRouter.put('/reset/:id_usuario', validarResetearPasswordMiddleware, Pass
 passwordRouter.put('/change/:id_usuario', resetLimitPasswordMiddleware, validarCambiarPasswordMiddleware, PasswordController.CambiarContraseña);
 passwordRouter.post('/request-reset', resetLimiterMiddleware, validarRequestResetMiddleware, PasswordController.requestReset);
 passwordRouter.put('/verify-reset', resetLimiterMiddleware, validarVerifyResetMiddleware, PasswordController.verifyReset);
-passwordRouter.put('/reset-password-login', resetLimitPasswordMiddleware, verificarResetPasswordMiddleware, validarResetPasswordFinalMiddleware, PasswordController.resetPassword);
+passwordRouter.put(
+    '/reset-password-login',
+    resetLimitPasswordMiddleware,
+    verificarResetPasswordMiddleware,
+    validarResetPasswordFinalMiddleware,
+    PasswordController.resetPassword,
+);
