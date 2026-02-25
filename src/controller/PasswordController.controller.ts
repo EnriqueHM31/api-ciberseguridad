@@ -4,7 +4,7 @@ import { UUID } from 'node:crypto';
 import { JWT_RECOVERY_SECRET } from '../config';
 import { JWT_EXPIRES_PASSWORD, JWT_TOKEN_PASSWORD_NAME } from '../config/constants';
 import { PasswordModel } from '../model/password.model';
-import { TratarElError } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 export class PasswordController {
     static async ResetearContraseña(req: Request, res: Response) {
@@ -21,12 +21,8 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            res.status(500).json({
-                ok: false,
-                message: TratarElError(error),
-                data: null,
-                error: 'Error interno del servidor',
-            });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -44,12 +40,8 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            res.status(500).json({
-                ok: false,
-                message: TratarElError(error),
-                data: null,
-                error: 'Error en la petición',
-            });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
     static async requestReset(req: Request, res: Response) {
@@ -67,12 +59,8 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            res.status(500).json({
-                ok: false,
-                message: TratarElError(error),
-                data: null,
-                error: 'Error interno del servidor',
-            });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 
@@ -101,12 +89,8 @@ export class PasswordController {
                 error: null,
             });
         } catch (error) {
-            res.status(500).json({
-                ok: false,
-                message: TratarElError(error),
-                data: null,
-                error: 'Error interno del servidor',
-            });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
     /**
@@ -125,12 +109,8 @@ export class PasswordController {
                 error: data,
             });
         } catch (error) {
-            res.status(500).json({
-                ok: false,
-                message: TratarElError(error),
-                data: null,
-                error: 'Error interno del servidor',
-            });
+            const normalized = handleAppError(error);
+            res.status(normalized.statusCode).json({ ...normalized, data: null });
         }
     }
 }
