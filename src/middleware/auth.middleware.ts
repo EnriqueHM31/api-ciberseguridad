@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { validarLogin } from '../schemas/auth.schema';
-import { formatearErroresZod } from '../util/errores';
+import { handleAppError } from '../util/errores';
 
 /* ======================================================
 VALIDAR LOGIN
@@ -14,7 +14,7 @@ export function validarLoginMiddleware(req: Request, res: Response, next: NextFu
             ok: false,
             error: 'Error de validación',
             data: null,
-            message: formatearErroresZod(result.error),
+            message: handleAppError(result.error),
         });
         return;
     }
