@@ -2,8 +2,8 @@ import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { UUID } from 'node:crypto';
 import { JWT_SECRET } from '../config';
+import { JWT_TOKEN_NAME } from '../config/constants';
 import { USER_ROLE_ADMIN, USER_ROLE_USER } from '../config/index';
-import { handleAppError } from '../util/errores';
 
 export const verificarAdminMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -27,19 +27,17 @@ export const verificarAdminMiddleware = (req: Request, res: Response, next: Next
             });
         }
 
+        req.body.id_usuario = decoded.id_usuario;
+
         next();
     } catch (error) {
-        const normalized = handleAppError(error);
-        res.status(normalized.statusCode).json({
-            data: null,
-            ...normalized,
-        });
+        next(error);
     }
 };
 
 export const verificarUserMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies?.token;
+        const token = req.cookies?.[JWT_TOKEN_NAME];
 
         if (!token) {
             return res.status(401).json({
@@ -61,19 +59,17 @@ export const verificarUserMiddleware = (req: Request, res: Response, next: NextF
             });
         }
 
+        req.body.id_usuario = decoded.id_usuario;
+
         next();
     } catch (error) {
-        const normalized = handleAppError(error);
-        res.status(normalized.statusCode).json({
-            data: null,
-            ...normalized,
-        });
+        next(error);
     }
 };
 
 export const verificarTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies?.token;
+        const token = req.cookies?.[JWT_TOKEN_NAME];
 
         if (!token) {
             return res.status(401).json({
@@ -84,15 +80,11 @@ export const verificarTokenMiddleware = (req: Request, res: Response, next: Next
             });
         }
 
-        jwt.verify(token, JWT_SECRET!);
+        const decoded = jwt.verify(token, JWT_SECRET!) as { id_usuario: number; rol: string };
 
+        req.body.id_usuario = decoded.id_usuario;
         next();
     } catch (error) {
-        const normalized = handleAppError(error);
-        res.status(normalized.statusCode).json({
-            data: null,
-
-            ...normalized,
-        });
+        next(error);
     }
 };
