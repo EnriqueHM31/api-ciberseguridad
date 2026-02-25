@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_RECOVERY_SECRET } from '../config';
+import { handleAppError } from '../util/errores';
 
 export const verificarResetPasswordMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,13 +22,11 @@ export const verificarResetPasswordMiddleware = (req: Request, res: Response, ne
         req.body.recoverySession = decoded;
 
         next();
-    } catch {
-        res.status(401).json({
-            ok: false,
-            message: 'Token inválido o expirado',
+    } catch (error) {
+        const normalized = handleAppError(error);
+        res.status(normalized.statusCode).json({
             data: null,
-            error: null,
+            ...normalized,
         });
-        return;
     }
 };
