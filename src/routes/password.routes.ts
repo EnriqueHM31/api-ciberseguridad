@@ -14,7 +14,7 @@ import { verificarResetPasswordMiddleware } from '../middleware/verifyResetPassw
 export const passwordRouter: ExpressRouter = Router();
 
 // PASSWORD
-passwordRouter.put('/reset/:id_usuario', validarResetearPasswordMiddleware, PasswordController.ResetearContraseña);
+passwordRouter.put('/reset/:id_usuario', validarResetearPasswordMiddleware, PasswordController.ResetearContraseñaAdministrador);
 passwordRouter.put('/change/:id_usuario', resetLimitPasswordMiddleware, validarCambiarPasswordMiddleware, PasswordController.CambiarContraseña);
 passwordRouter.post('/request-reset', resetLimiterMiddleware, validarRequestResetMiddleware, PasswordController.requestReset);
 passwordRouter.put('/verify-reset', resetLimiterMiddleware, validarVerifyResetMiddleware, PasswordController.verifyReset);
