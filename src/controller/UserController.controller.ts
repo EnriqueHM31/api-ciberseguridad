@@ -33,7 +33,12 @@ export class UserController {
 
             const { data } = await UserModel.modificarUsuario({ nombre_usuario, nombre_completo, correo_electronico, rol }, id_usuario);
 
-            res.status(200).json({ ok: true, message: `Los datos del usuario ${data.nombre_usuario} han sido actualizados`, data: data, error: null });
+            res.status(200).json({
+                ok: true,
+                message: `Los datos del usuario ${data.nombre_usuario} han sido actualizados`,
+                data: data,
+                error: null,
+            });
         } catch (error) {
             res.status(500).json({ ok: false, message: 'Error interno del servidor', data: null, error: TratarElError(error) });
         }
