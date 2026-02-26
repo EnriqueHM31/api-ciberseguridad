@@ -18,6 +18,13 @@ export const schemaUsuario = z.object({
         .min(3, { message: 'Debe tener al menos 3 caracteres' })
         .max(100, { message: 'Máximo 100 caracteres permitidos' }),
 
+    telefono: z
+        .string({ message: 'El teléfono es requerido' })
+        .trim()
+        .regex(/^\d{10,15}$/, {
+            message: 'Debe contener solo números (10–15 dígitos)',
+        }),
+
     correo_electronico: z.string({ message: 'El correo es requerido' }).email({ message: 'Debe ser un correo válido' }),
 
     contrasena: z
