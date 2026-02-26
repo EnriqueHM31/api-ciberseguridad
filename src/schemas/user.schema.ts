@@ -21,8 +21,8 @@ export const schemaUsuario = z.object({
     telefono: z
         .string({ message: 'El teléfono es requerido' })
         .trim()
-        .regex(/^\d{10,15}$/, {
-            message: 'Debe contener solo números (10–15 dígitos)',
+        .regex(/^[1-9]\d{9,14}$/, {
+            message: 'Debe estar en formato internacional (+ y 10–15 dígitos)',
         }),
 
     correo_electronico: z.string({ message: 'El correo es requerido' }).email({ message: 'Debe ser un correo válido' }),
@@ -62,13 +62,28 @@ MODIFICAR USUARIO
 
 export const usuarioModificarSchema = z
     .object({
-        nombre_usuario: z.string().min(3).max(50).optional(),
+        nombre_usuario: z
+            .string({ message: 'El nombre de usuario es requerido' })
+            .min(3, { message: 'Debe tener al menos 3 caracteres' })
+            .max(50, { message: 'Máximo 50 caracteres permitidos' })
+            .optional(),
 
-        nombre_completo: z.string().min(3).max(100).optional(),
+        nombre_completo: z
+            .string({ message: 'El nombre completo es requerido' })
+            .min(3, { message: 'Debe tener al menos 3 caracteres' })
+            .max(100, { message: 'Máximo 100 caracteres permitidos' })
+            .optional(),
 
-        correo_electronico: z.string().email().optional(),
+        correo_electronico: z.string({ message: 'El correo es requerido' }).email({ message: 'Debe ser un correo válido' }).optional(),
 
-        rol: z.enum([USER_ROLE_ADMIN, USER_ROLE_USER]).optional(),
+        telefono: z
+            .string({ message: 'El teléfono es requerido' })
+            .trim()
+            .regex(/^[1-9]\d{9,14}$/, {
+                message: 'Debe estar en formato internacional (+ y 10–15 dígitos)',
+            }),
+
+        rol: z.enum([USER_ROLE_ADMIN, USER_ROLE_USER], { message: 'El rol no es válido' }).optional(),
     })
     .refine((data) => Object.keys(data).length > 0, {
         message: 'Debe enviar al menos un campo para actualizar',
