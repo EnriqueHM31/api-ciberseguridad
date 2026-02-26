@@ -1,4 +1,4 @@
-import { pool } from '../config/database'; // ajusta la ruta si es diferente
+import { pool } from '../config/database';
 
 export interface RegistroError {
     codigo_error: string;
