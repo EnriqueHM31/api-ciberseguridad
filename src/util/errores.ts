@@ -45,7 +45,6 @@ interface MySqlError extends Error {
 
 /**
  * Códigos de error conocidos que puede devolver MySQL.
- * Se usan para mapear errores técnicos a mensajes de negocio.
  */
 export const MYSQL_ERROR_CODES = {
     DUPLICATE_ENTRY: 'ER_DUP_ENTRY',
@@ -57,8 +56,7 @@ export const MYSQL_ERROR_CODES = {
 } as const;
 
 /**
- * Tipo que define cómo se mapea cada código MySQL a
- * un mensaje y status HTTP.
+ * Tipo que define cómo se mapea cada código MySQL a un mensaje y status HTTP.
  */
 type MysqlMapping = {
     [code in (typeof MYSQL_ERROR_CODES)[keyof typeof MYSQL_ERROR_CODES]]?: {
@@ -68,7 +66,7 @@ type MysqlMapping = {
 };
 
 /**
- * Tabla de conversión de errores MySQL → errores normalizados.
+ * Tabla de conversión de errores MySQL a errores normalizados.
  */
 const mysqlMapping: MysqlMapping = {
     [MYSQL_ERROR_CODES.DUPLICATE_ENTRY]: {
@@ -142,8 +140,7 @@ function handleMySqlError(err: MySqlError): NormalizedError {
 }
 
 /**
- * Helpers para JWT --------------------------------------------------------
- * Detecta y transforma errores propios de jsonwebtoken.
+ * Helpers para JWT,- Detecta y transforma errores propios de jsonwebtoken.
  */
 
 export const JWT_ERROR_NAMES = {
@@ -231,13 +228,22 @@ interface NodemailerError extends Error {
     command?: string;
 }
 
+/**
+ * Códigos de error conocidos que puede devolver NODEMAILER (Envio de correo).
+ */
+const NODEMAILER_ERROR_CODES = {
+    EAUTH: 'EAUTH',
+    ECONNECTION: 'ECONNECTION',
+    ETIMEDOUT: 'ETIMEDOUT',
+};
+
 function isNodemailerError(err: unknown): err is NodemailerError {
     return typeof err === 'object' && err !== null && 'code' in err && typeof (err as any).code === 'string';
 }
 
 function handleNodemailerError(err: NodemailerError): NormalizedError {
     switch (err.code) {
-        case 'EAUTH':
+        case NODEMAILER_ERROR_CODES.EAUTH:
             return {
                 ok: false,
                 message: 'Error de autenticación del servidor de correo',
@@ -245,7 +251,7 @@ function handleNodemailerError(err: NodemailerError): NormalizedError {
                 statusCode: 500,
             };
 
-        case 'ECONNECTION':
+        case NODEMAILER_ERROR_CODES.ECONNECTION:
             return {
                 ok: false,
                 message: 'No se pudo conectar al servidor de correo',
@@ -253,7 +259,7 @@ function handleNodemailerError(err: NodemailerError): NormalizedError {
                 statusCode: 503,
             };
 
-        case 'ETIMEDOUT':
+        case NODEMAILER_ERROR_CODES.ETIMEDOUT:
             return {
                 ok: false,
                 message: 'Tiempo de espera agotado al enviar el correo',
@@ -284,14 +290,6 @@ export function handleAppError(error: unknown): NormalizedError {
             message: error.message,
             error: error.name,
             statusCode: error.statusCode,
-        };
-    }
-    if (error instanceof Error) {
-        return {
-            ok: false,
-            message: error.message || 'Error interno del servidor',
-            error: error.name || 'Error',
-            statusCode: 500,
         };
     }
 
