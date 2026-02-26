@@ -16,6 +16,7 @@ export class AuthController {
                     id_usuario: data.id_usuario,
                     nombre_usuario: data.nombre_usuario,
                     correo_electronico: data.correo_electronico,
+                    telefono: data.telefono,
                     rol: data.rol,
                     nombre_completo: data.nombre_completo,
                     fecha_creacion: data.fecha_creacion,
