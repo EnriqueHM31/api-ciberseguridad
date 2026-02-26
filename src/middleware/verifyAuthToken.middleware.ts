@@ -27,7 +27,10 @@ export const verificarAdminMiddleware = (req: Request, res: Response, next: Next
             });
         }
 
-        req.body.id_usuario = decoded.id_usuario;
+        req.user = {
+            id_usuario: decoded.id_usuario.toString(),
+            rol: decoded.rol,
+        };
 
         next();
     } catch (error) {
@@ -59,7 +62,10 @@ export const verificarUserMiddleware = (req: Request, res: Response, next: NextF
             });
         }
 
-        req.body.id_usuario = decoded.id_usuario;
+        req.user = {
+            id_usuario: decoded.id_usuario.toString(),
+            rol: decoded.rol,
+        };
 
         next();
     } catch (error) {
@@ -82,7 +88,10 @@ export const verificarTokenMiddleware = (req: Request, res: Response, next: Next
 
         const decoded = jwt.verify(token, JWT_SECRET!) as { id_usuario: number; rol: string };
 
-        req.body.id_usuario = decoded.id_usuario;
+        req.user = {
+            id_usuario: decoded.id_usuario.toString(),
+            rol: decoded.rol,
+        };
         next();
     } catch (error) {
         next(error);
