@@ -225,12 +225,59 @@ function handleZodError(err: any): NormalizedError {
     };
 }
 
+interface NodemailerError extends Error {
+    code?: string;
+    responseCode?: number;
+    command?: string;
+}
+
+function isNodemailerError(err: unknown): err is NodemailerError {
+    return typeof err === 'object' && err !== null && 'code' in err && typeof (err as any).code === 'string';
+}
+
+function handleNodemailerError(err: NodemailerError): NormalizedError {
+    switch (err.code) {
+        case 'EAUTH':
+            return {
+                ok: false,
+                message: 'Error de autenticación del servidor de correo',
+                error: err.code,
+                statusCode: 500,
+            };
+
+        case 'ECONNECTION':
+            return {
+                ok: false,
+                message: 'No se pudo conectar al servidor de correo',
+                error: err.code,
+                statusCode: 503,
+            };
+
+        case 'ETIMEDOUT':
+            return {
+                ok: false,
+                message: 'Tiempo de espera agotado al enviar el correo',
+                error: err.code,
+                statusCode: 504,
+            };
+
+        default:
+            return {
+                ok: false,
+                message: 'Error al enviar el correo electrónico',
+                error: err.code || 'MailError',
+                statusCode: 500,
+            };
+    }
+}
+
 /**
  * Función principal para normalizar errores.
  * Todos los catch en controllers deben enviar aquí el error original.
  * Devuelve un objeto listo para enviarse como respuesta HTTP.
  */
 export function handleAppError(error: unknown): NormalizedError {
+    console.log({ error });
     if (error instanceof AppError) {
         return {
             ok: false,
@@ -260,6 +307,10 @@ export function handleAppError(error: unknown): NormalizedError {
         return handleZodError(error);
     }
 
+    if (isNodemailerError(error)) {
+        return handleNodemailerError(error);
+    }
+
     if (error instanceof Error) {
         return {
             ok: false,
@@ -276,37 +327,4 @@ export function handleAppError(error: unknown): NormalizedError {
         error: String(error),
         statusCode: 500,
     };
-}
-
-/**
- * Middleware global de Express para manejo de errores.
- * Debe registrarse al final del stack.
- * Se encarga de normalizar el error y enviarlo como respuesta HTTP.
- */
-import { Request, Response, NextFunction } from 'express';
-import { ErrorModel } from '../model/error.model';
-
-export async function errorHandlerMiddleware(err: unknown, req: Request, res: Response, next: NextFunction) {
-    const normalized = handleAppError(err);
-    const ip = req.ip === '::1' ? '127.0.0.1' : req.ip;
-    try {
-        await ErrorModel.crear({
-            codigo_error: normalized.error,
-            mensaje_error: normalized.message,
-            traza_error: err instanceof Error ? (err.stack ?? null) : null,
-            ruta: req.originalUrl,
-            metodo_http: req.method,
-            id_usuario: (req as any).id_usuario ?? null,
-            direccion_ip: ip ?? null,
-        });
-    } catch (dbError) {
-        console.error('Error al guardar log en BD:', dbError);
-    }
-
-    return res.status(normalized.statusCode).json({
-        ok: false,
-        error: normalized.error,
-        message: normalized.message,
-        data: null,
-    });
 }
