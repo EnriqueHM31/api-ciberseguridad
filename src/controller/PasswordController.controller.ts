@@ -7,7 +7,7 @@ import { PasswordModel } from '../model/password.model';
 export class PasswordController {
     static async ResetearContraseñaAdministrador(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id_usuario } = req.params as { id_usuario: string };
+            const { id_usuario } = req.user as { id_usuario: string };
             const { newPassword } = req.body as { newPassword: string };
 
             const { data } = await PasswordModel.resetearContraseñaAdministrador(id_usuario, newPassword);
@@ -25,7 +25,7 @@ export class PasswordController {
 
     static async CambiarContraseña(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id_usuario } = req.params as { id_usuario: string };
+            const { id_usuario } = req.user as { id_usuario: string };
             const { newPassword, contrasenaActual } = req.body;
 
             const { data } = await PasswordModel.cambiarContraseña(id_usuario, newPassword, contrasenaActual);
