@@ -216,8 +216,8 @@ function handleZodError(err: any): NormalizedError {
     const issues: string[] = err.issues.map((i: any) => i.message);
     return {
         ok: false,
-        message: 'Datos inválidos',
-        error: issues.join('; '),
+        message: issues.join('; '),
+        error: 'Datos inválidos',
         statusCode: 400,
     };
 }
