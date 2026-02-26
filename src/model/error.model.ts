@@ -14,13 +14,11 @@ export class ErrorModel {
     private static readonly LIMITE_MAXIMO = 1000;
 
     static async crear(error: RegistroError): Promise<void> {
-        const sqlInsert = `
-      INSERT INTO registro_errores
-      (codigo_error, mensaje_error, traza_error, ruta, metodo_http, id_usuario, direccion_ip)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
+        const id_error = crypto.randomUUID();
+        const sqlInsert = `INSERT INTO registro_errores(id_error, codigo_error, mensaje_error, traza_error, ruta, metodo_http, id_usuario, direccion_ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
         await pool.execute(sqlInsert, [
+            id_error,
             error.codigo_error,
             error.mensaje_error,
             error.traza_error,
