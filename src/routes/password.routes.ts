@@ -9,7 +9,7 @@ import {
     validarResetPasswordFinalMiddleware,
     validarVerifyResetMiddleware,
 } from '../middleware/password.middleware';
-import { verificarAdminMiddleware, verificarUserMiddleware } from '../middleware/verifyAuthToken.middleware';
+import { verificarAdminMiddleware, verificarTokenMiddleware } from '../middleware/verifyAuthToken.middleware';
 import { verificarTokenResetPasswordMiddleware } from '../middleware/verifyResetPassword.middleware';
 
 export const passwordRouter: ExpressRouter = Router();
@@ -25,7 +25,7 @@ passwordRouter.put(
 // RUTA PARA QUE EL USUARIO PUEDA RESETEAR LA CONTRASEÑA DE SU PROPIO USUARIO
 passwordRouter.put(
     '/change/:id_usuario',
-    verificarUserMiddleware,
+    verificarTokenMiddleware,
     resetLimitPasswordMiddleware,
     validarCambiarPasswordMiddleware,
     PasswordController.CambiarContraseña,
