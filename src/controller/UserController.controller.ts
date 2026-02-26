@@ -15,9 +15,11 @@ export class UserController {
 
     static async CrearUsuario(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre_usuario, nombre_completo, correo_electronico, contrasena, rol } = req.body;
+            const { nombre_usuario, nombre_completo, telefono, correo_electronico, contrasena, rol } = req.body;
 
-            const { data } = await UserModel.crearUsuario({ usuario: { nombre_usuario, nombre_completo, correo_electronico, contrasena, rol } });
+            const { data } = await UserModel.crearUsuario({
+                usuario: { nombre_usuario, nombre_completo, telefono, correo_electronico, contrasena, rol },
+            });
 
             res.status(201).json({ ok: true, message: `Usuario ${data.nombre_usuario} creado correctamente`, data: data, error: null });
         } catch (error) {
@@ -28,9 +30,9 @@ export class UserController {
     static async ModificarUsuario(req: Request, res: Response, next: NextFunction) {
         try {
             const { id_usuario } = req.params as { id_usuario: string };
-            const { nombre_usuario, nombre_completo, correo_electronico, rol } = req.body as Omit<User, 'id_usuario'>;
+            const { nombre_usuario, nombre_completo, correo_electronico, telefono, rol } = req.body as Omit<User, 'id_usuario'>;
 
-            const { data } = await UserModel.modificarUsuario({ nombre_usuario, nombre_completo, correo_electronico, rol }, id_usuario);
+            const { data } = await UserModel.modificarUsuario({ nombre_usuario, nombre_completo, telefono, correo_electronico, rol }, id_usuario);
 
             res.status(200).json({
                 ok: true,
