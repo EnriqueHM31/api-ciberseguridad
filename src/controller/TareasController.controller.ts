@@ -4,7 +4,7 @@ import { TareaModel } from '../model/tarea.model';
 export class TareasController {
     static async ObtenerTareasUsuario(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id_usuario } = req.params as { id_usuario: string };
+            const { id_usuario } = req.user as { id_usuario: string };
             const { data } = await TareaModel.ObtenerTareasUsuario(id_usuario);
             res.status(200).json({ ok: true, message: 'Listado de tareas del usuario', data: data, error: null });
         } catch (error) {
@@ -14,7 +14,8 @@ export class TareasController {
 
     static async CrearTarea(req: Request, res: Response, next: NextFunction) {
         try {
-            const { titulo, descripcion, id_usuario } = req.body;
+            const { id_usuario } = req.user as { id_usuario: string };
+            const { titulo, descripcion } = req.body;
 
             const { data } = await TareaModel.crearTarea({ titulo, descripcion, id_usuario });
 
