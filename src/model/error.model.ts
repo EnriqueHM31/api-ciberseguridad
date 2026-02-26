@@ -35,17 +35,17 @@ export class ErrorModel {
 
     private static async limpiarExcedentes(): Promise<void> {
         const sqlDelete = `
-      DELETE FROM registro_errores
-      WHERE id_error NOT IN (
-        SELECT id_error FROM (
-          SELECT id_error
-          FROM registro_errores
-          ORDER BY fecha_registro DESC
-          LIMIT ?
-        ) AS ultimos
-      )
+        DELETE FROM registro_errores
+        WHERE id_error NOT IN (
+            SELECT id_error FROM (
+                SELECT id_error
+                FROM registro_errores
+                ORDER BY fecha_registro DESC
+                LIMIT ${this.LIMITE_MAXIMO}
+            ) AS ultimos
+        )
     `;
 
-        await pool.execute(sqlDelete, [this.LIMITE_MAXIMO]);
+        await pool.query(sqlDelete);
     }
 }
