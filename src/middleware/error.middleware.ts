@@ -14,10 +14,10 @@ export async function errorHandlerMiddleware(err: unknown, req: Request, res: Re
         await ErrorModel.crear({
             codigo_error: normalized.error,
             mensaje_error: normalized.message,
-            traza_error: err instanceof Error ? (err.stack ?? null) : null,
+            traza_error: err instanceof Error ? err.stack ?? null : null,
             ruta: req.originalUrl,
             metodo_http: req.method,
-            id_usuario: (req as any).id_usuario ?? null,
+            id_usuario: req.user?.id_usuario ?? null,
             direccion_ip: ip ?? null,
         });
     } catch (dbError) {
