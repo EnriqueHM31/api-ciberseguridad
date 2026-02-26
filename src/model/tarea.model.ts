@@ -4,11 +4,10 @@ import type { Tarea, TareaQuery } from '../types/task';
 
 export class TareaModel {
     static async ObtenerTareasUsuario(id_usuario: string) {
-        const [rows] = await pool.execute<TareaQuery[]>(`SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_usuario = ?`, [id_usuario]);
-
-        if (rows.length === 0) {
-            throw new Error('No hay tareas para este usuario');
-        }
+        const [rows] = await pool.execute<TareaQuery[]>(
+            `SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_usuario = ?`,
+            [id_usuario],
+        );
 
         return { data: rows };
     }
@@ -16,9 +15,17 @@ export class TareaModel {
     static async crearTarea(tarea: Omit<Tarea, 'id_tarea' | 'fecha_creacion' | 'completada'>) {
         const id_tarea = crypto.randomUUID();
 
-        await pool.execute(`INSERT INTO tareas (id_tarea, titulo, descripcion, id_usuario) VALUES (?, ?, ?, ?)`, [id_tarea, tarea.titulo, tarea.descripcion, tarea.id_usuario]);
+        await pool.execute(`INSERT INTO tareas (id_tarea, titulo, descripcion, id_usuario) VALUES (?, ?, ?, ?)`, [
+            id_tarea,
+            tarea.titulo,
+            tarea.descripcion,
+            tarea.id_usuario,
+        ]);
 
-        const [rows] = await pool.execute<TareaQuery[]>(`SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_tarea = ?`, [id_tarea]);
+        const [rows] = await pool.execute<TareaQuery[]>(
+            `SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_tarea = ?`,
+            [id_tarea],
+        );
 
         if (!rows[0]) {
             throw new Error('No se pudo crear la tarea');
@@ -34,7 +41,10 @@ export class TareaModel {
             throw new Error('La tarea no existe');
         }
 
-        const [tareaModificada] = await pool.execute<TareaQuery[]>(`SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_tarea = ?`, [id_tarea]);
+        const [tareaModificada] = await pool.execute<TareaQuery[]>(
+            `SELECT id_tarea, titulo, descripcion, id_usuario, fecha_creacion, completada FROM tareas WHERE BINARY id_tarea = ?`,
+            [id_tarea],
+        );
 
         if (!tareaModificada[0]) {
             throw new Error('La tarea no existe');
