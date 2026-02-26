@@ -32,13 +32,7 @@ passwordRouter.put(
 );
 
 // RUTA PARA QUE EL USUARIO PUEDA REQUERIR UN CÓDIGO DE RECUPERACIÓN
-passwordRouter.post(
-    '/request-reset',
-    resetLimiterMiddleware,
-    validarCambiarPasswordMiddleware,
-    validarRequestResetMiddleware,
-    PasswordController.requestReset,
-);
+passwordRouter.post('/request-reset', resetLimiterMiddleware, validarRequestResetMiddleware, PasswordController.requestReset);
 
 // RUTA PARA QUE EL USUARIO PUEDA VERIFICAR UN CÓDIGO DE RECUPERACIÓN
 passwordRouter.put('/verify-reset', resetLimiterMiddleware, validarVerifyResetMiddleware, PasswordController.verifyReset);
