@@ -24,6 +24,8 @@ export class UserModel {
             throw new Error('No se encontraron usuarios');
         }
 
+        return { data: rows };
+
         const data = rows.map((user) => ({
             id_usuario: user.id_usuario,
             nombre_usuario: user.nombre_usuario,
