@@ -14,23 +14,7 @@ if (HASH_KEY.length !== 32) {
 }
 
 /* =========================
-   Normalización
-========================= */
-
-export function normalizePhone(phone: string): string {
-    // elimina todo excepto números
-    const digits = phone.replace(/\D/g, '');
-
-    // ejemplo básico para México (+52)
-    if (digits.length === 10) {
-        return '52' + digits;
-    }
-
-    return digits;
-}
-
-/* =========================
-   HMAC para unicidad
+   Hash
 ========================= */
 
 export function hashPhone(phone: string): string {
