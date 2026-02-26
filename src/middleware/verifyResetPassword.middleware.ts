@@ -19,7 +19,9 @@ export const verificarTokenResetPasswordMiddleware = (req: Request, res: Respons
 
         const decoded = jwt.verify(token, JWT_RECOVERY_SECRET!) as { id_usuario: string };
 
-        req.body.id_usuario = decoded.id_usuario;
+        req.user = {
+            id_usuario: decoded.id_usuario,
+        };
 
         next();
     } catch (error) {
