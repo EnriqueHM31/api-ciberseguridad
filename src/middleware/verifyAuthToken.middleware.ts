@@ -13,6 +13,8 @@ export const verificarAdminMiddleware = (req: Request, res: Response, next: Next
             return res.status(401).json({
                 ok: false,
                 message: 'No autenticado',
+                data: null,
+                error: null,
             });
         }
 
