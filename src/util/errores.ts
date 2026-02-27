@@ -53,6 +53,7 @@ export const MYSQL_ERROR_CODES = {
     NO_REFERENCED_ROW: 'ER_NO_REFERENCED_ROW_2',
     ROW_REFERENCED: 'ER_ROW_IS_REFERENCED_2',
     WRONG_VALUE_COUNT: 'ER_WRONG_VALUE_COUNT_ON_ROW',
+    ER_BAD_FIELD_ERROR: 'ER_BAD_FIELD_ERROR',
 } as const;
 
 /**
@@ -91,6 +92,10 @@ const mysqlMapping: MysqlMapping = {
     },
     [MYSQL_ERROR_CODES.WRONG_VALUE_COUNT]: {
         message: 'Parámetros incorrectos',
+        statusCode: 400,
+    },
+    [MYSQL_ERROR_CODES.ER_BAD_FIELD_ERROR]: {
+        message: 'Ocurrio un error al realizar la operación',
         statusCode: 400,
     },
 };
