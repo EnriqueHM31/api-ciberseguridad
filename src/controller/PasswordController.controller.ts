@@ -43,6 +43,7 @@ export class PasswordController {
     static async requestReset(req: Request, res: Response, next: NextFunction) {
         try {
             const { email } = req.body;
+            console.log({ email });
 
             const { data: dataOTP } = await PasswordModel.generarOTP(email);
 
