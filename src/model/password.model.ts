@@ -79,7 +79,7 @@ export class PasswordModel {
         const id_recuperacion = crypto.randomUUID();
 
         await pool.execute(
-            `INSERT INTO recuperacion_contrasena (id, correo_electronico, codigo_otp, fecha_expiracion, verificado, fecha_creacion) VALUES (?, ?, ?, ?, false, CURRENT_TIMESTAMP)`,
+            `INSERT INTO recuperacion_contrasena (id_recuperacion, correo_electronico, codigo_otp, fecha_expiracion, verificado, fecha_creacion) VALUES (?, ?, ?, ?, false, CURRENT_TIMESTAMP)`,
             [id_recuperacion, correo, codigoOTP, fechaExpiracion],
         );
 
@@ -87,7 +87,7 @@ export class PasswordModel {
     }
     static async verificarOTP(correo: string, codigo: string) {
         const [registro] = await pool.execute<PasswordResetQuery[]>(
-            `SELECT id, codigo_otp, fecha_expiracion, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`,
+            `SELECT id_recuperacion, codigo_otp, fecha_expiracion, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`,
             [correo],
         );
 
@@ -109,14 +109,15 @@ export class PasswordModel {
             throw new Error('El código ha expirado');
         }
 
-        await pool.execute(`UPDATE recuperacion_contrasena SET verificado = true WHERE id = ?`, [datosOTP.id]);
+        await pool.execute(`UPDATE recuperacion_contrasena SET verificado = true WHERE id_recuperacion = ?`, [datosOTP.id_recuperacion]);
 
         return { data: true };
     }
     static async resetearContrasenaLogin(correo: string, nuevaContrasena: string) {
-        const [registro] = await pool.execute<any[]>(`SELECT id, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`, [
-            correo,
-        ]);
+        const [registro] = await pool.execute<any[]>(
+            `SELECT id_recuperacion, verificado FROM recuperacion_contrasena WHERE BINARY correo_electronico = ?`,
+            [correo],
+        );
 
         if (registro.length === 0) {
             throw new Error('No existe solicitud válida');
