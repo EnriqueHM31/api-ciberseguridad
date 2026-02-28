@@ -42,7 +42,7 @@ export class UserModel {
     }
 
     static async crearUsuario({ usuario }: { usuario: Omit<User, 'id_usuario'> }) {
-        // 1️⃣ Validar correo
+        // Validar correo
         const [existeCorreo] = await pool.execute<UserQuery[]>('SELECT id_usuario FROM usuarios WHERE BINARY correo_electronico = ?', [
             usuario.correo_electronico,
         ]);
@@ -51,7 +51,7 @@ export class UserModel {
             throw new Error('Ese correo ya está vinculado a otro usuario');
         }
 
-        // 2️⃣ Validar username
+        // Validar username
         const [existeUsername] = await pool.execute<UserQuery[]>('SELECT id_usuario FROM usuarios WHERE BINARY nombre_usuario = ?', [
             usuario.nombre_usuario,
         ]);
@@ -60,7 +60,7 @@ export class UserModel {
             throw new Error('Ese nombre de usuario ya está vinculado a otro usuario');
         }
 
-        // 3️⃣ Normalizar teléfono
+        // Normalizar teléfono
         const telefonoNormalizado = usuario.telefono;
 
         // 4️⃣ Generar hash para unicidad
@@ -132,7 +132,6 @@ export class UserModel {
 
         return { data: data[0] };
     }
-
     static async modificarUsuario(usuario: Omit<User, 'id_usuario' | 'fecha_creacion' | 'contrasena' | 'fecha_actualizacion'>, id_usuario: string) {
         const telefonoHash = hashPhone(usuario.telefono);
 
